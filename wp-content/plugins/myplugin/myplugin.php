@@ -43,6 +43,13 @@ function my_deactivation_hook() {
 
 register_deactivation_hook(__FILE__, 'my_deactivation_hook');
 
+// function my_custom_shortcode() {
+//     include 'slider.php';
+// }
+// add_action("my_shortcode", "my_custom_shortcode");
+
+
+
 function my_uninstall_hook() {
     global $wpdb, $table_prefix;
     $wp_emp = $table_prefix . 'emp';
@@ -53,4 +60,41 @@ function my_uninstall_hook() {
 
 register_uninstall_hook(__FILE__, 'my_uninstall_hook');
 
- ?>
+//Enqueue Scripts in Custom Plugin
+function my_custom_scripts()
+{
+    $is_login= is_user_logged_in() ? 1 : 0 ;
+    $path_js= plugins_url('js/main.js',__FILE__);
+    $dep = array('jquery');
+    $ver = filemtime(plugin_dir_path(__FILE__).'js/main.js');
+    wp_enqueue_script('my-custom-js',$path_js,$dep,$ver,true);
+
+    $is_login=is_user_logged_in() ? 1 : 0 ;
+    wp_add_inline_script('my-custom-js','var is_login='.$is_login.';','before');
+
+    // if(is_page('home')){
+    //             wp_enqueue_script('my-custom-js', $path_js, $dep, $ver, true);
+    //  }
+
+}
+add_action('wp_enqueue_scripts','my_custom_scripts');
+add_action('admin_enqueue_scripts','my_custom_scripts');
+
+
+
+//Enqueue Style in Custom Plugin
+function my_custom_style() {
+    $path_css = plugins_url('css/main.css', __FILE__);
+    $ver_style = filemtime(plugin_dir_path(__FILE__) . 'css/main.css');
+    wp_enqueue_style('my-custom-style', $path_css, array(), $ver_style);
+}
+add_action('wp_enqueue_scripts', 'my_custom_style');
+// add_action('admin_enqueue_scripts','my_custom_style');
+
+
+function shortcode_example() {
+    include 'slider.php';
+  }
+  add_shortcode('example', 'shortcode_example');
+
+?>
